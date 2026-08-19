@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rahma — Year Ahead</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,450;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F3E7DC;
+    --bg-card:#FFFCF7;
+    --ink:#2B2230;
+    --ink-soft:#6B5D69;
+    --plum:#7A3B52;
+    --plum-deep:#4F2536;
+    --gold:#B9863B;
+    --sage:#74815F;
+    --line:#DCC9B8;
+    --shadow: rgba(79, 37, 54, 0.14);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 10% -10%, #F8EEE3 0%, transparent 60%),
+      var(--bg);
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:0 24px 120px;
+  }
+
+  /* ---------- sticky control bar ---------- */
+  .controlbar{
+    position:sticky;
+    top:0;
+    z-index:50;
+    backdrop-filter: blur(10px);
+    background: rgba(243,231,220,0.86);
+    border-bottom:1px solid var(--line);
+    padding:14px 0;
+  }
+  .controlbar-inner{
+    max-width:760px;
+    margin:0 auto;
+    padding:0 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .brandmark{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:15px;
+    color:var(--plum-deep);
+    letter-spacing:0.02em;
+  }
+  .brandmark span{ color:var(--gold); }
+  .controls{ display:flex; align-items:center; gap:10px; }
+  .level-toggle{
+    display:inline-flex;
+    background:#EAD9C8;
+    border-radius:999px;
+    padding:3px;
+    gap:2px;
+  }
+  .level-toggle button{
+    border:none;
+    background:transparent;
+    font-family:'Work Sans', sans-serif;
+    font-size:12.5px;
+    font-weight:600;
+    letter-spacing:0.03em;
+    color:var(--ink-soft);
+    padding:7px 14px;
+    border-radius:999px;
+    cursor:pointer;
+    transition: all .2s ease;
+  }
+  .level-toggle button.active{
+    background:var(--plum);
+    color:#fff;
+    box-shadow:0 2px 8px var(--shadow);
+  }
+  .expand-all{
+    border:1px solid var(--line);
+    background:var(--bg-card);
+    color:var(--plum-deep);
+    font-size:12px;
+    font-weight:600;
+    padding:7px 12px;
+    border-radius:999px;
+    cursor:pointer;
+    display:none;
+    white-space:nowrap;
+  }
+  body[data-level="granular"] .expand-all{ display:inline-block; }
+
+  /* ---------- hero ---------- */
+  .hero{
+    padding:64px 0 40px;
+    text-align:center;
+  }
+  .eyebrow{
+    font-size:12.5px;
+    font-weight:700;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--sage);
+    margin-bottom:14px;
+  }
+  .hero h1{
+    font-size:clamp(32px,6vw,48px);
+    color:var(--plum-deep);
+    margin:0 0 18px;
+  }
+  .motto{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-weight:500;
+    font-size:clamp(20px,3.4vw,26px);
+    color:var(--plum);
+    margin:0 0 8px;
+  }
+  .motto-sub{
+    color:var(--ink-soft);
+    font-size:15px;
+    margin-bottom:28px;
+  }
+  .goals{
+    text-align:left;
+    background:var(--bg-card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:22px 26px;
+    box-shadow:0 8px 30px var(--shadow);
+    margin-top:12px;
+  }
+  .goals h4{
+    margin:0 0 12px;
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:0.1em;
+    color:var(--gold);
+    font-family:'Work Sans', sans-serif;
+    font-weight:700;
+  }
+  .goals ul{ margin:0; padding-left:20px; }
+  .goals li{ margin-bottom:8px; color:var(--ink-soft); font-size:14.5px; }
+  .goals li::marker{ color:var(--sage); }
+
+  /* ---------- timeline ---------- */
+  .timeline{
+    position:relative;
+    margin-top:56px;
+    padding-left:34px;
+  }
+  .timeline::before{
+    content:'';
+    position:absolute;
+    left:9px;
+    top:8px;
+    bottom:8px;
+    width:2px;
+    background-image: linear-gradient(var(--gold) 60%, transparent 0%);
+    background-size: 2px 10px;
+    background-repeat: repeat-y;
+    opacity:0.55;
+  }
+
+  .phase-card{
+    position:relative;
+    margin-bottom:22px;
+    background:var(--bg-card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    box-shadow:0 6px 20px var(--shadow);
+    overflow:hidden;
+  }
+  .dot{
+    position:absolute;
+    left:-34px;
+    top:28px;
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    background:var(--plum);
+    border:3px solid var(--bg);
+    box-shadow:0 0 0 2px var(--gold);
+  }
+
+  .card-header{
+    padding:22px 24px 18px;
+    cursor:default;
+    display:block;
+  }
+  body[data-level="granular"] .card-header{ cursor:pointer; }
+
+  .card-meta{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:6px;
+  }
+  .card-eyebrow{
+    font-size:11.5px;
+    font-weight:700;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--sage);
+  }
+  .card-time{
+    font-size:12px;
+    color:var(--ink-soft);
+    font-style:italic;
+  }
+  .card-title{
+    font-size:22px;
+    margin:0 0 8px;
+    color:var(--plum-deep);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .chevron{
+    font-size:14px;
+    color:var(--gold);
+    transition:transform .25s ease;
+    display:none;
+  }
+  body[data-level="granular"] .chevron{ display:inline-block; }
+  .phase-card.open .chevron{ transform:rotate(90deg); }
+
+  .card-tagline{
+    margin:0;
+    color:var(--ink-soft);
+    font-size:15px;
+  }
+
+  .tier-medium{
+    margin:0;
+    padding:2px 24px 20px 46px;
+    display:none;
+  }
+  .tier-medium li{
+    font-size:14px;
+    color:var(--ink);
+    margin-bottom:7px;
+  }
+  .tier-medium li::marker{ color:var(--gold); }
+  body[data-level="medium"] .tier-medium,
+  body[data-level="granular"] .tier-medium{ display:block; }
+
+  .tier-granular{
+    max-height:0;
+    opacity:0;
+    overflow:hidden;
+    transition: max-height .35s ease, opacity .25s ease, padding .35s ease;
+    padding:0 24px;
+    border-top:1px dashed var(--line);
+  }
+  .tier-granular p{ font-size:14.5px; color:var(--ink); margin:14px 0; }
+  .tier-granular ul{ padding-left:20px; margin:12px 0; }
+  .tier-granular li{ font-size:14.5px; margin-bottom:6px; color:var(--ink); }
+  .tier-granular strong{ color:var(--plum-deep); }
+  .phase-card.open .tier-granular{
+    max-height:1400px;
+    opacity:1;
+    padding:16px 24px 22px;
+  }
+
+  .hint{
+    text-align:center;
+    color:var(--ink-soft);
+    font-size:12.5px;
+    margin-top:8px;
+    font-style:italic;
+  }
+
+  footer{
+    text-align:center;
+    margin-top:60px;
+    padding-top:24px;
+    border-top:1px solid var(--line);
+    color:var(--ink-soft);
+    font-size:13px;
+  }
+
+  @media (max-width:560px){
+    .wrap{ padding:0 16px 100px; }
+    .timeline{ padding-left:26px; }
+    .dot{ left:-26px; width:16px; height:16px; }
+    .controlbar-inner{ padding:0 16px; }
+    .level-toggle button{ padding:6px 10px; font-size:11.5px; }
+  }
+</style>
+</head>
+<body data-level="high">
+
+<div class="controlbar">
+  <div class="controlbar-inner">
+    <div class="brandmark">RAHMA <span>·</span> YEAR AHEAD</div>
+    <div class="controls">
+      <button class="expand-all" id="expandAllBtn" onclick="toggleAll()">Expand all</button>
+      <div class="level-toggle" role="tablist">
+        <button data-level="high" class="active" onclick="setLevel('high')">High</button>
+        <button data-level="medium" onclick="setLevel('medium')">Medium</button>
+        <button data-level="granular" onclick="setLevel('granular')">Granular</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">Aug 2026 → Aug 2027 · ~10–15 hrs / week</div>
+    <h1>The Year Ahead</h1>
+    <p class="motto">"The same grace, extended to yourself."</p>
+    <p class="motto-sub">Day to day: <em>steady, not perfect.</em></p>
+
+    <div class="goals">
+      <h4>Goals to hold alongside the roadmap</h4>
+      <ul>
+        <li>Protect the thing that makes Rahma work — extend its own premise of grace to yourself, not just to users</li>
+        <li>Keep the documentation habit going — real key-person-risk protection, already a strength</li>
+        <li>Build enough business literacy to direct contractor help well, without over-relying on it</li>
+        <li>Deepen trust with early users through direct, personal contact — it substitutes for a built community</li>
+        <li>Preserve optionality — don't lock in decisions before the data justifies them</li>
+      </ul>
+    </div>
+    <p class="hint">Use High / Medium / Granular above to zoom in or out on everything below.</p>
+  </section>
+
+  <div class="timeline">
+
+    <!-- FOUNDER'S YEAR -->
+    <article class="phase-card">
+      <div class="dot"></div>
+      <header class="card-header" onclick="toggleCard(this)">
+        <div class="card-meta"><span class="card-eyebrow">The Founder's Year</span><span class="card-time">All year</span></div>
+        <h3 class="card-title"><span class="chevron">▸</span>Pacing, energy, and help</h3>
+        <p class="card-tagline">This is the year that makes income-replacement realistic next year — not this year's target itself.</p>
+      </header>
+      <ul class="tier-medium">
+        <li>Protect the time budget first; let the product roadmap flex around it</li>
+        <li>Fixed blocks for support, not reactive all-day checking</li>
+        <li>Ramadan will cost personal energy right when the app needs its biggest push — plan around it now</li>
+        <li>Hire support first, content next, dev last and narrowly scoped</li>
+        <li>Set a hiring trigger now, while calm, not mid-burnout</li>
+      </ul>
+      <div class="tier-granular">
+        <p>Your stated constraint is time/energy on top of mothering — not ideas, not roadmap length. That means the founder-side plan should protect <strong>you</strong> first, and let the product roadmap flex around that, not the other way around.</p>
+        <p><strong>Protect the time budget, don't just track it.</strong> At 10–15 hrs/week, the real risk isn't running out of roadmap — it's the support inbox, or one thread of feedback, quietly eating the whole week. Pick fixed blocks for support/email rather than checking reactively all day. Use the triage filter (below) as a real gate — if a "quick thing" doesn't fit "already-decided" or "trust bug," it waits, even when it's tempting to just knock out.</p>
+        <p>Expect Ramadan (Feb 7 – March 8, 2027) to cost you personal energy at the exact moment the app needs its biggest push. Worth planning around now — consider front-loading the Ramadan journey build into January, so launch week itself doesn't also have to be a heavy building week.</p>
+        <p><strong>Sequencing contractor help</strong> by what actually protects your time first:</p>
+        <ul>
+          <li><strong>Support, first.</strong> Most unbounded, least specialized knowledge transfer. Once Phase 2 gives you real ticket volume and revenue, this is the first hire worth making.</li>
+          <li><strong>Content, next.</strong> Once the website track starts (Month 4+), a contractor writing posts under your direction is a natural second hire.</li>
+          <li><strong>Dev, last, and narrow.</strong> Highest onboarding cost for a solo Flutter/Supabase codebase. Scope tightly if you go here at all — e.g. "build the website's blog templates," not an open-ended arrangement.</li>
+        </ul>
+        <p>Set an actual threshold now — e.g. "once MRR covers X hours/week of support help, I hire it" — so the decision is made in advance by a number, not in the moment by how tired you are. Quarterly, ask yourself directly: is this pace still sustainable? Hold, push, or pull back? A "3 on the way to 1" year only works if you're still standing at the end of it.</p>
+      </div>
+    </article>
+
+    <!-- PHASE 0 -->
+    <article class="phase-card">
+      <div class="dot"></div>
+      <header class="card-header" onclick="toggleCard(this)">
+        <div class="card-meta"><span class="card-eyebrow">Phase 0</span><span class="card-time">Next ~10 days</span></div>
+        <h3 class="card-title"><span class="chevron">▸</span>Right now</h3>
+        <p class="card-tagline">Watch and prepare — don't build.</p>
+      </header>
+      <ul class="tier-medium">
+        <li>Watch the Play Console ticket every few days, not daily</li>
+        <li>Set up a lightweight feedback capture before real volume hits</li>
+        <li>Draft (don't ship) your Day-1 metrics list</li>
+        <li>No store-copy or pricing changes during this window</li>
+      </ul>
+      <div class="tier-granular">
+        <p>You're deliberately stepping back to let feedback come in. Use this window for things that don't need daily attention.</p>
+        <p><strong>Watch, don't build.</strong> Support tickets on both platforms move on their own timeline — re-checking constantly won't speed it up.</p>
+        <p><strong>Set up a lightweight feedback capture.</strong> Right now all support flows through one inbox with no ticketing system. Before real volume hits, decide where feedback themes get logged so patterns don't get lost in individual replies.</p>
+        <p><strong>Draft your Day-1 metrics list.</strong> Decide now what you'll pull in Week 1 (trial starts, trial→paid conversion, tier split, Day-1/7 retention) so you're not improvising once analytics start populating.</p>
+        <p><strong>No store-copy or pricing changes during this window.</strong> Let the current build stabilize and gather real reactions before touching anything that triggers another review cycle.</p>
+      </div>
+    </article>
+
+    <!-- PHASE 1 -->
+    <article class="phase-card">
+      <div class="dot"></div>
+      <header class="card-header" onclick="toggleCard(this)">
+        <div class="card-meta"><span class="card-eyebrow">Phase 1</span><span class="card-time">Weeks 2–6</span></div>
+        <h3 class="card-title"><span class="chevron">▸</span>Stabilize</h3>
+        <p class="card-tagline">Close known trust and security gaps before anything new.</p>
+      </header>
+      <ul class="tier-medium">
+        <li>Resolve the Play Console ticket; get 1.2.0 live on both platforms</li>
+        <li><em>claude-insights</em> auth fix — already done, confirmed working</li>
+        <li>Ship the prayer-time location sync fix</li>
+        <li><strong>New, high priority:</strong> verify child-deletion actually deletes tied data, not just orphans it</li>
+        <li>Draft a Terms of Service / EULA — none exists yet</li>
+        <li>Update Privacy Policy's location language in the same release as the sync fix</li>
+        <li>Batch quiet copy fixes (pattern-chart wording, CSV export mention)</li>
+      </ul>
+      <div class="tier-granular">
+        <p><strong>Ship-blocking / trust-critical:</strong></p>
+        <ul>
+          <li>Resolve the Play Console advertising-ID ticket; get 1.2.0 live on both platforms</li>
+          <li>The <em>claude-insights</em> auth gap is done — confirmed deployed and working as of the Aug 8 session</li>
+          <li>Ship the prayer-time location sync fix (currently local-only, doesn't survive reinstall/device switch) — bundle into the same Android rebuild as planned</li>
+          <li><strong>New:</strong> the child-delete confirmation dialog tells users that removing a child wipes "all entries, tracking, checklists, and memory book content" — but <code>checklist_items.child_id</code> uses <code>ON DELETE SET NULL</code>, not <code>CASCADE</code>, and <code>memory_entries</code>' behavior hasn't been confirmed either. If the FK behavior doesn't match the dialog's promise, content is orphaned, not deleted — the same category of risk as the Account Deletion copy in Legal & Compliance. Worth a direct check before this becomes a support ticket or a compliance question.</li>
+        </ul>
+        <p><strong>Legal foundation:</strong> draft a ToS/EULA — none currently exists, and it gets harder to add gracefully once you have a paying user base who never agreed to terms. Update the Privacy Policy's location language in the same release as the sync fix, not after.</p>
+        <p><strong>Quiet copy fixes to batch:</strong> soften "pattern charts free for everyone" to match the actual free-tier view; add CSV export to the App Store description / Media Kit; confirm the PDF/CSV export scope question before publishing anything export-related.</p>
+        <p>By week 6 you should have your first honest signal on trial starts and conversion — don't over-read a small sample, but start the habit of looking.</p>
+      </div>
+    </article>
+
+    <!-- PHASE 2 -->
+    <article class="phase-card">
+      <div class="dot"></div>
+      <header class="card-header" onclick="toggleCard(this)">
+        <div class="card-meta"><span class="card-eyebrow">Phase 2</span><span class="card-time">Months 2–3</span></div>
+        <h3 class="card-title"><span class="chevron">▸</span>Build revenue visibility</h3>
+        <p class="card-tagline">You can't manage what you can't see — turn placeholders into real numbers.</p>
+      </header>
+      <ul class="tier-medium">
+        <li>Stand up basic reporting on a regular cadence</li>
+        <li>Get your first real conversion and churn numbers</li>
+        <li>Confirm actual costs (Netlify, Resend, dev fees)</li>
+        <li>Decide your CAC posture before spending anything on paid</li>
+        <li>Test backup/restore once — currently unverified</li>
+      </ul>
+      <div class="tier-granular">
+        <p>This is the core of a "sustainable revenue" year: every unit-economics field in your Business & Financial doc is still a placeholder.</p>
+        <ul>
+          <li>Pull App Store Connect and Play Console analytics on a regular (weekly is plenty) cadence</li>
+          <li>Get your first real conversion and churn numbers — even four weeks of data starts telling you whether the pricing tiers are landing right</li>
+          <li>Confirm actual costs — Netlify/Resend tier, Apple/Google developer fees — close the small "not yet confirmed" gaps</li>
+          <li>You're currently at $0 cash CAC (organic only). Before spending on paid acquisition, get at least one full trial-to-paid cohort's data first</li>
+          <li>Test backup/restore once. Unglamorous, but far more expensive to discover as a gap once you have real subscriber data to lose</li>
+        </ul>
+        <p><strong>Target for end of Phase 2:</strong> the Business & Financial doc's placeholder checklist (MRR, subscriber count by tier, conversion rate, churn) should be real numbers, not TODOs.</p>
+      </div>
+    </article>
+
+    <!-- PHASE 3 -->
+    <article class="phase-card">
+      <div class="dot"></div>
+      <header class="card-header" onclick="toggleCard(this)">
+        <div class="card-meta"><span class="card-eyebrow">Phase 3</span><span class="card-time">Months 3–5</span></div>
+        <h3 class="card-title"><span class="chevron">▸</span>Ship what's decided, then build retention</h3>
+        <p class="card-tagline">Contraction Timer first (already scoped), then Guided Reflection Journeys for retention.</p>
+      </header>
+      <ul class="tier-medium">
+        <li>Ship the Contraction Timer — wall-clock timestamps, session persistence, gentle 5-1-1 nudge, medical disclaimer</li>
+        <li>Ship Guided Reflection Journeys (7/14/30-day: sabr, gratitude, healing)</li>
+        <li>Instrument journeys from day one — does starting one correlate with lower churn?</li>
+        <li>Revisit the dual due-date model decision</li>
+      </ul>
+      <div class="tier-granular">
+        <p><strong>First, the Contraction Timer.</strong> Fully scoped from your Aug 8 session — wall-clock timestamps (not an incrementing counter, so timing survives phone lock/background suspension), session-based rollover, local persistence surviving force-close or restart, a gentle 5-1-1-style pattern nudge matching the app's non-clinical tone, and a disclaimer that this is a general guideline, not personalized medical guidance. Ship it before Journeys — the scoping work is done, and it serves a moment that genuinely matters for Expecting-stage users.</p>
+        <p><strong>Then, the retention lever: Guided Reflection Journeys.</strong> You already have "coming soon" messaging live in-app and in store copy — this is exactly the feature that gives subscribers a reason to stay past month one, and it closes a promise you've already made publicly. Prioritize it over net-new ideas — it's expectation debt, not just a feature idea. Instrument it from day one: does starting a journey correlate with lower churn?</p>
+        <p><strong>Also in this window:</strong> revisit the dual due-date model (<code>profiles.due_date</code> vs <code>children.due_date</code>) — low urgency technically, but worth resolving before it's touching more code paths.</p>
+      </div>
+    </article>
+
+    <!-- PHASE 4 -->
+    <article class="phase-card">
+      <div class="dot"></div>
+      <header class="card-header" onclick="toggleCard(this)">
+        <div class="card-meta"><span class="card-eyebrow">Phase 4</span><span class="card-time">Month 6 · timed to Feb 8, 2027</span></div>
+        <h3 class="card-title"><span class="chevron">▸</span>The Ramadan window</h3>
+        <p class="card-tagline">Your single best-timed seasonal moment — plan backward from it.</p>
+      </header>
+      <ul class="tier-medium">
+        <li>Ship the Ramadan seasonal journey ahead of Feb 8 — functionally done by mid-January</li>
+        <li>Time an organic push and a fresh ASO look around the window</li>
+        <li>Track whether the spike converts to retained subscribers, not just a bump</li>
+      </ul>
+      <div class="tier-granular">
+        <p>Ramadan 2027 begins the evening of Feb 7, first fasting day Feb 8. This is your single best-timed seasonal moment for both engagement and conversion — plan backward from it, not toward it at the last minute.</p>
+        <p>Ship the Ramadan seasonal journey ahead of Feb 8 — build/QA buffer means this needs to be functionally done by mid-January. Consider a Ramadan-specific push: a natural moment for organic content, a possible limited-time trial angle, and a spike in relevant searches — ASO keywords are already seasonally relevant, worth a fresh look right before the window opens.</p>
+        <p>This is also your first real test of whether seasonal spikes convert to retained subscribers or just a short-lived bump — track it accordingly.</p>
+      </div>
+    </article>
+
+    <!-- WEBSITE TRACK -->
+    <article class="phase-card">
+      <div class="dot"></div>
+      <header class="card-header" onclick="toggleCard(this)">
+        <div class="card-meta"><span class="card-eyebrow">New Track</span><span class="card-time">Months 4–9 · runs alongside 3–5</span></div>
+        <h3 class="card-title"><span class="chevron">▸</span>The Rahma website</h3>
+        <p class="card-tagline">A lean blog + curated support directory + mixed affiliate — content and partnerships, not a big build.</p>
+      </header>
+      <ul class="tier-medium">
+        <li>MVP: blog-capable site + resource/partner directory (Month 4–5)</li>
+        <li>Partnership outreach to support groups & therapists, reusing the Media Kit framework (Month 5–7, ongoing)</li>
+        <li>Tie content cadence to product moments — Journeys, Ramadan — not a separate calendar</li>
+        <li>FTC affiliate disclosure + directory disclaimer, bundled with the ToS work</li>
+        <li>Doesn't start before Phase 2 is done</li>
+      </ul>
+      <div class="tier-granular">
+        <p>A genuine second workstream, worth treating as its own small, steady track rather than a phase you "finish." Given your scope decisions — a curated directory linking to <em>existing</em> established support groups/therapists rather than a built community, and mixed/contextual affiliate rather than a single niche — this is mostly content and partnership work, not heavy engineering.</p>
+        <p><strong>Why it earns a place in a revenue-focused year:</strong> a second revenue line that doesn't touch subscription pricing, an SEO/organic channel that compounds instead of decaying like a single Instagram post, and a natural home for content built around Guided Reflection Journeys and the Ramadan journey.</p>
+        <p><strong>Don't start before Phase 2 is done</strong> — starting a second workstream while Phase 1's trust-critical items are open would split focus at the wrong time.</p>
+        <p><strong>MVP scope (Month 4–5):</strong></p>
+        <ul>
+          <li>Turn the existing Netlify-hosted marketing site into something blog-capable — static markdown posts are enough at this scale</li>
+          <li>4–6 launch posts, one per major stage/persona, with natural, contextual affiliate placements</li>
+          <li>A resource & partner directory page, organized by stage, starting as a hand-picked list before any outreach begins</li>
+          <li>Two-way linking: posts link into specific in-app features; the app links out to the directory contextually (e.g. within Loss & Healing)</li>
+        </ul>
+        <p><strong>Partnership outreach (Month 5–7):</strong> reuse the influencer/partnership framework already built in the Media Kit — same muscle, different targets. Frame it as reciprocal, and pace it as a background task, a few emails a week, not a sprint.</p>
+        <p><strong>Content cadence:</strong> tie posts to Journeys as they ship, and give Ramadan 2–3 posts around it, your single best content moment of the year. Otherwise aim low — one post and one directory addition a month is sustainable at your bandwidth.</p>
+        <p><strong>Compliance:</strong> every affiliate link needs an FTC-compliant disclosure — cheap to build in from post one. The directory needs a disclaimer that a listing isn't a clinical endorsement. Draft both alongside the ToS/EULA gap in Phase 1.</p>
+      </div>
+    </article>
+
+    <!-- PHASE 5 -->
+    <article class="phase-card">
+      <div class="dot"></div>
+      <header class="card-header" onclick="toggleCard(this)">
+        <div class="card-meta"><span class="card-eyebrow">Phase 5</span><span class="card-time">Months 6–9</span></div>
+        <h3 class="card-title"><span class="chevron">▸</span>Growth, now that you can measure it</h3>
+        <p class="card-tagline">Spend growth effort only once you have data to spend it well.</p>
+      </header>
+      <ul class="tier-medium">
+        <li>Activate the influencer/partnership outreach framework already built</li>
+        <li>Make a considered call on a small paid-acquisition test</li>
+        <li>Re-run ASO informed by which listing language actually drives installs</li>
+      </ul>
+      <div class="tier-granular">
+        <p>With a full data quarter behind you and a strong seasonal moment just passed, this is the point where spending real effort on growth is informed rather than a guess.</p>
+        <ul>
+          <li>Revisit the influencer/partnership outreach framework already built in the Media Kit — the asset exists, it just hasn't been activated</li>
+          <li>With real conversion data in hand, make a considered call on a small paid-acquisition test rather than staying organic-only by default</li>
+          <li>Re-run an ASO pass — keywords, subtitle, description — informed by which store-listing language is actually driving installs</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- PHASE 6 -->
+    <article class="phase-card">
+      <div class="dot"></div>
+      <header class="card-header" onclick="toggleCard(this)">
+        <div class="card-meta"><span class="card-eyebrow">Phase 6</span><span class="card-time">Months 9–12</span></div>
+        <h3 class="card-title"><span class="chevron">▸</span>Consolidate & de-risk</h3>
+        <p class="card-tagline">End the year a little less fragile, not just bigger.</p>
+      </header>
+      <ul class="tier-medium">
+        <li>Do a credential rotation dry run — never yet tested</li>
+        <li>Revisit pricing with a full year of real conversion/churn data</li>
+        <li>Decide whether support volume justifies a lightweight ticketing tool</li>
+        <li>Clean up remaining small tech debt</li>
+        <li>Update the master docs with a full year of real data</li>
+      </ul>
+      <div class="tier-granular">
+        <p>You're a single-person operation with no backup for any function — technical, business, or support. A revenue-focused year should end with the business being a little less fragile, not just bigger.</p>
+        <ul>
+          <li>Formal credential rotation pass — none has ever been performed; do it once as a dry run so you know the process works before you ever need it urgently</li>
+          <li>Revisit pricing with a full year of conversion/churn data — confirm the current tiers are still right, or adjust with evidence instead of instinct</li>
+          <li>Decide whether support volume justifies a lightweight ticketing tool, or whether direct email is still fine at your scale</li>
+          <li>Clean up known small tech debt (dead <code>salah_logs.off</code> column, unused tables, <code>vitamin_reminder_logs</code> missing <code>stage_key</code>)</li>
+          <li>Update the Business & Financial and Governance docs with a full year of real data — useful if help, investment, or an eventual exit is ever on the table</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- THREADS -->
+    <article class="phase-card">
+      <div class="dot"></div>
+      <header class="card-header" onclick="toggleCard(this)">
+        <div class="card-meta"><span class="card-eyebrow">Ongoing</span><span class="card-time">All year</span></div>
+        <h3 class="card-title"><span class="chevron">▸</span>Threads, triage & boundaries</h3>
+        <p class="card-tagline">The rules that keep this plan from being renegotiated every week.</p>
+      </header>
+      <ul class="tier-medium">
+        <li>Run the full Pre-Release QA Checklist every release</li>
+        <li>Re-check Apple's in-review cap before bundling store changes</li>
+        <li>Triage: decided → build; trust bug → jumps the queue; new scope → its own track; small polish → batched</li>
+        <li>No major rebuild, no hiring plan, no built community, no aggressive paid spend this year</li>
+      </ul>
+      <div class="tier-granular">
+        <p><strong>Every release:</strong> run the full Pre-Release QA Checklist — it exists because specific real bugs (Android product-ID mismatch, version-code regression, gating drift) have already happened once. <strong>Every store-copy or pricing change:</strong> re-check against Apple's cap on simultaneous in-review submissions before bundling changes together.</p>
+        <p><strong>How to triage new ideas going forward</strong> — a rough filter so this roadmap doesn't get renegotiated every time a new idea shows up:</p>
+        <ul>
+          <li><strong>Already decided and scoped</strong> (like the Contraction Timer) → goes into the next available build window, doesn't need re-litigating</li>
+          <li><strong>Trust/data-integrity gaps</strong> (like the child-deletion cascade question) → treated like bugs, not features — fixed before new build, regardless of size</li>
+          <li><strong>Genuinely new scope</strong> (like the website) → gets its own track with its own start condition, not squeezed into an existing phase</li>
+          <li><strong>Small polish</strong> (folder rename/delete, character limits, minor copy) → batched into whatever release is already happening, never its own milestone</li>
+        </ul>
+        <p><strong>Deliberately not in Year 1:</strong> no major platform rebuild, no team hiring plan, no aggressive paid-growth spend before you have your own conversion data, no built-in community/forum feature (support is external links + partnerships instead), no chasing "AI narrative" or agentic features beyond the already-planned insight generation, and no full editorial content operation on the website. The current scope — app plus a lean content/partnership track — is already substantial for one part-time founder to ship well.</p>
+      </div>
+    </article>
+
+  </div>
+
+  <footer>Rahma · رحمة — Year Ahead · Aug 2026 → Aug 2027</footer>
+
+</div>
+
+<script>
+  function setLevel(level){
+    document.body.dataset.level = level;
+    document.querySelectorAll('.level-toggle button').forEach(function(btn){
+      btn.classList.toggle('active', btn.dataset.level === level);
+    });
+    if(level !== 'granular'){
+      document.querySelectorAll('.phase-card.open').forEach(function(card){
+        card.classList.remove('open');
+      });
+    }
+  }
+
+  function toggleCard(header){
+    if(document.body.dataset.level !== 'granular') return;
+    header.closest('.phase-card').classList.toggle('open');
+  }
+
+  function toggleAll(){
+    var cards = document.querySelectorAll('.phase-card');
+    var anyClosed = Array.prototype.some.call(cards, function(c){ return !c.classList.contains('open'); });
+    cards.forEach(function(c){ c.classList.toggle('open', anyClosed); });
+    document.getElementById('expandAllBtn').textContent = anyClosed ? 'Collapse all' : 'Expand all';
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wins Tracker — Aug '26 to Aug '27</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root{
+  --paper:#F5EFE6; --ink:#2B2620; --ink-soft:#6B6154; --line:rgba(43,38,32,0.14);
+  --rose:#C4707A; --mauve:#8C5B6B; --slate:#4F6D7A; --gold:#B8935A;
+  --sage:#55684A; --clay:#A9714F; --plum:#7A5C7E; --teal:#3F7C6B;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;}
+.wrap{max-width:900px;margin:0 auto;padding:48px 24px 90px;}
+
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:14px;}
+h1{font-family:'Fraunces',serif;font-weight:500;font-size:clamp(32px,5.5vw,52px);line-height:1.05;margin:0 0 24px;}
+
+.hero-progress{
+  border:1px solid var(--line); background:rgba(255,255,255,.45); border-radius:3px;
+  padding:22px 26px; display:flex; align-items:center; gap:22px; margin-bottom:44px; flex-wrap:wrap;
+}
+.ring{ position:relative; width:74px; height:74px; flex-shrink:0; }
+.ring svg{ transform:rotate(-90deg); }
+.ring circle{ fill:none; stroke-width:7; }
+.ring .bg{ stroke:var(--line); }
+.ring .fg{ stroke:var(--sage); stroke-linecap:round; transition:stroke-dashoffset .5s ease; }
+.ring .pct{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:500;
+}
+.hero-text .num{ font-family:'Fraunces',serif; font-size:26px; font-weight:500; }
+.hero-text .label{ font-size:13px; color:var(--ink-soft); }
+.reset-btn{
+  margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.05em;
+  color:var(--ink-soft); background:none; border:1px solid var(--line); border-radius:2px;
+  padding:8px 12px; cursor:pointer; text-transform:uppercase;
+}
+.reset-btn:hover{ border-color:var(--ink-soft); color:var(--ink); }
+
+.section{
+  border:1px solid var(--line); border-left:3px solid var(--accent);
+  border-radius:2px; background:rgba(255,255,255,.4);
+  padding:24px 26px; margin-bottom:20px;
+}
+.section-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:16px; flex-wrap:wrap; gap:8px;}
+.section .tag{ font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin-bottom:6px;}
+.section h2{ font-family:'Fraunces',serif; font-weight:500; font-size:20px; margin:0;}
+.section .count{ font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--ink-soft); }
+
+.milestones{ display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px; }
+.m-item{
+  display:flex; align-items:center; gap:10px; padding:10px 12px;
+  border:1px solid var(--line); border-radius:2px; cursor:pointer; user-select:none;
+  background:rgba(255,255,255,.5); transition:background .15s ease, border-color .15s ease;
+}
+.m-item:hover{ border-color:var(--accent); }
+.m-item.done{ background:color-mix(in srgb, var(--accent) 12%, transparent); border-color:var(--accent); }
+.m-box{
+  width:18px; height:18px; border:1.5px solid var(--ink-soft); border-radius:3px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--paper);
+}
+.m-item.done .m-box{ background:var(--accent); border-color:var(--accent); }
+.m-label{ font-size:13.5px; line-height:1.3; }
+.m-item.done .m-label{ text-decoration:line-through; color:var(--ink-soft); }
+
+.weight-box{ display:flex; gap:16px; flex-wrap:wrap; align-items:flex-end; }
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field label{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.05em;}
+.field input{
+  font-family:'JetBrains Mono',monospace; font-size:16px; padding:9px 10px; width:110px;
+  border:1px solid var(--line); border-radius:2px; background:rgba(255,255,255,.6); color:var(--ink);
+}
+.weight-bar-wrap{ flex:1; min-width:200px; }
+.weight-bar{ height:10px; border-radius:6px; background:var(--line); overflow:hidden; margin-bottom:6px;}
+.weight-bar-fill{ height:100%; background:var(--accent); transition:width .4s ease; border-radius:6px;}
+.weight-status{ font-size:13px; color:var(--ink-soft); font-family:'JetBrains Mono',monospace;}
+
+.loading{ text-align:center; padding:60px 0; color:var(--ink-soft); font-family:'JetBrains Mono',monospace; font-size:13px;}
+
+#sec-rev{ --accent:var(--gold); }
+#sec-growth{ --accent:var(--gold); }
+#sec-body{ --accent:var(--rose); }
+#sec-date{ --accent:var(--mauve); }
+#sec-debt{ --accent:var(--sage); }
+#sec-career{ --accent:var(--slate); }
+#sec-you{ --accent:var(--plum); }
+#sec-ajnabi{ --accent:var(--teal); }
+
+@media(max-width:520px){ .hero-progress{ flex-direction:column; align-items:flex-start; } .reset-btn{ margin-left:0; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Aug 19, 2026 → Aug 19, 2027</div>
+  <h1>Every win, checked off.</h1>
+
+  <div id="loading" class="loading">Loading your progress…</div>
+
+  <div id="app" style="display:none;">
+
+    <div class="hero-progress">
+      <div class="ring">
+        <svg width="74" height="74" viewBox="0 0 74 74">
+          <circle class="bg" cx="37" cy="37" r="30"></circle>
+          <circle class="fg" id="ringFg" cx="37" cy="37" r="30" stroke-dasharray="188.5" stroke-dashoffset="188.5"></circle>
+        </svg>
+        <div class="pct" id="ringPct">0%</div>
+      </div>
+      <div class="hero-text">
+        <div class="num" id="heroCount">0 / 0</div>
+        <div class="label">milestones unlocked</div>
+      </div>
+      <button class="reset-btn" id="resetBtn">Reset all</button>
+    </div>
+
+    <!-- RAHMA REVENUE -->
+    <div class="section" id="sec-rev">
+      <div class="section-head">
+        <div>
+          <div class="tag">Rahma · Revenue</div>
+          <h2>First dollars in</h2>
+        </div>
+        <div class="count" data-count-for="rev"></div>
+      </div>
+      <div class="milestones" data-group="rev">
+        <!-- injected -->
+      </div>
+    </div>
+
+    <!-- RAHMA GROWTH -->
+    <div class="section" id="sec-growth">
+      <div class="section-head">
+        <div>
+          <div class="tag">Rahma · Growth</div>
+          <h2>Downloads &amp; subscribers</h2>
+        </div>
+        <div class="count" data-count-for="growth"></div>
+      </div>
+      <div class="milestones" data-group="growth"></div>
+    </div>
+
+    <!-- AJNABI -->
+    <div class="section" id="sec-ajnabi">
+      <div class="section-head">
+        <div>
+          <div class="tag">Ajnabi Designs · Etsy</div>
+          <h2>The quiet side lane</h2>
+        </div>
+        <div class="count" data-count-for="ajnabi"></div>
+      </div>
+      <div class="milestones" data-group="ajnabi"></div>
+    </div>
+
+    <!-- BODY -->
+    <div class="section" id="sec-body">
+      <div class="section-head">
+        <div>
+          <div class="tag">Motherhood &amp; Postpartum</div>
+          <h2>Body milestones</h2>
+        </div>
+        <div class="count" data-count-for="body"></div>
+      </div>
+      <div class="milestones" data-group="body"></div>
+
+      <div style="margin-top:18px; padding-top:16px; border-top:1px solid var(--line);">
+        <div class="weight-box">
+          <div class="field">
+            <label>Starting (postpartum)</label>
+            <input type="number" id="wStart" placeholder="lb">
+          </div>
+          <div class="field">
+            <label>Current</label>
+            <input type="number" id="wCurrent" placeholder="lb">
+          </div>
+          <div class="weight-bar-wrap">
+            <div class="weight-bar"><div class="weight-bar-fill" id="wBarFill" style="width:0%"></div></div>
+            <div class="weight-status" id="wStatus">Enter your numbers to track progress toward 175 lb</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DATE NIGHTS -->
+    <div class="section" id="sec-date">
+      <div class="section-head">
+        <div>
+          <div class="tag">Marriage</div>
+          <h2>Date night, once a month</h2>
+        </div>
+        <div class="count" data-count-for="date"></div>
+      </div>
+      <div class="milestones" data-group="date"></div>
+    </div>
+
+    <!-- DEBT -->
+    <div class="section" id="sec-debt">
+      <div class="section-head">
+        <div>
+          <div class="tag">Money</div>
+          <h2>Debt paid off</h2>
+        </div>
+        <div class="count" data-count-for="debt"></div>
+      </div>
+      <div class="milestones" data-group="debt"></div>
+    </div>
+
+    <!-- CAREER -->
+    <div class="section" id="sec-career">
+      <div class="section-head">
+        <div>
+          <div class="tag">Career</div>
+          <h2>Back at it</h2>
+        </div>
+        <div class="count" data-count-for="career"></div>
+      </div>
+      <div class="milestones" data-group="career"></div>
+    </div>
+
+    <!-- YOU -->
+    <div class="section" id="sec-you">
+      <div class="section-head">
+        <div>
+          <div class="tag">You</div>
+          <h2>Still a person, not just a role</h2>
+        </div>
+        <div class="count" data-count-for="you"></div>
+      </div>
+      <div class="milestones" data-group="you"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const MILESTONES = {
+  rev: [
+    {id:'rev-100', label:'First $100 earned'},
+    {id:'rev-500', label:'$500 total'},
+    {id:'rev-1000', label:'$1,000 total'},
+    {id:'rev-2500', label:'$2,500 total'},
+    {id:'rev-5000', label:'$5,000 total'},
+    {id:'rev-10000', label:'$10,000 total'},
+    {id:'rev-25000', label:'$25,000 total'},
+    {id:'rev-50000', label:'$50,000 total'},
+    {id:'rev-75000', label:'$75,000 total'},
+    {id:'rev-110000', label:'$110,000 — goal hit'},
+  ],
+  growth: [
+    {id:'dl-first', label:'First download'},
+    {id:'dl-100', label:'100 downloads'},
+    {id:'dl-1000', label:'1,000 downloads'},
+    {id:'trial-first', label:'First trial started'},
+    {id:'sub-first', label:'First paid subscriber'},
+    {id:'sub-10', label:'10 paid subscribers'},
+    {id:'sub-50', label:'50 paid subscribers'},
+    {id:'sub-100', label:'100 paid subscribers'},
+  ],
+  body: [
+    {id:'walk-mile', label:'Walk 1 mile with both kids'},
+    {id:'pilates-week', label:'Pilates, 1x a week'},
+  ],
+  ajnabi: [
+    {id:'ajn-fix-desc', label:'Fix the broken listing description'},
+    {id:'ajn-list-10', label:'10 listings live'},
+    {id:'ajn-list-15', label:'15 listings live'},
+    {id:'ajn-list-25', label:'25 listings — goal'},
+    {id:'ajn-verify', label:'Somali + Islamic content verifiers lined up'},
+    {id:'ajn-disclosure', label:'AI-disclosure added to all listings'},
+    {id:'ajn-review-1', label:'First review'},
+    {id:'ajn-bundle', label:'Starter Bundle built'},
+    {id:'ajn-rev-100', label:'First $100 (this push)'},
+    {id:'ajn-rev-250', label:'$250 total'},
+    {id:'ajn-rev-500', label:'$500 total'},
+    {id:'ajn-rev-monthly', label:'$150–300/mo recurring — the real goal'},
+  ],
+  date: [
+    {id:'date-1', label:'Sep \'26'},{id:'date-2', label:'Oct \'26'},{id:'date-3', label:'Nov \'26'},
+    {id:'date-4', label:'Dec \'26'},{id:'date-5', label:'Jan \'27'},{id:'date-6', label:'Feb \'27'},
+    {id:'date-7', label:'Mar \'27'},{id:'date-8', label:'Apr \'27'},{id:'date-9', label:'May \'27'},
+    {id:'date-10', label:'Jun \'27 (anniversary trip)'},{id:'date-11', label:'Jul \'27'},{id:'date-12', label:'Aug \'27'},
+  ],
+  debt: [
+    {id:'debt-hvac', label:'HVAC loan paid off'},
+    {id:'debt-cc', label:'Credit cards paid off'},
+  ],
+  career: [
+    {id:'career-return', label:'Returned from leave, seamless'},
+    {id:'career-ansible1', label:'First Ansible task shipped'},
+    {id:'career-ansible2', label:'Fully onboarded team onto it'},
+  ],
+  you: [
+    {id:'read-1', label:'Read 1 book'},{id:'read-3', label:'Read 3 books'},
+    {id:'read-6', label:'Read 6 books'},{id:'read-12', label:'Read 12 books'},
+    {id:'friends-1', label:'Friend hangout ×1'},{id:'friends-3', label:'Friend hangout ×3'},
+    {id:'friends-6', label:'Friend hangout ×6'},{id:'friends-12', label:'Friend hangout ×12'},
+    {id:'faith-30', label:'30-day salah streak'},{id:'faith-90', label:'90-day salah streak'},
+  ],
+};
+
+const STORAGE_KEY = 'vision-tracker-2026-2027';
+let state = { checked: {}, wStart: '', wCurrent: '' };
+
+async function loadState(){
+  try{
+    const res = await window.storage.get(STORAGE_KEY, false);
+    if(res && res.value){
+      const parsed = JSON.parse(res.value);
+      state = Object.assign({checked:{}, wStart:'', wCurrent:''}, parsed);
+    }
+  }catch(e){
+    // key doesn't exist yet — use defaults
+  }
+}
+
+async function saveState(){
+  try{
+    await window.storage.set(STORAGE_KEY, JSON.stringify(state), false);
+  }catch(e){
+    console.error('Could not save progress', e);
+  }
+}
+
+function totalMilestoneCount(){
+  return Object.values(MILESTONES).reduce((sum, arr) => sum + arr.length, 0);
+}
+function checkedCount(){
+  return Object.values(state.checked).filter(Boolean).length;
+}
+
+function renderGroup(groupKey){
+  const container = document.querySelector(`[data-group="${groupKey}"]`);
+  container.innerHTML = '';
+  MILESTONES[groupKey].forEach(m => {
+    const done = !!state.checked[m.id];
+    const el = document.createElement('div');
+    el.className = 'm-item' + (done ? ' done' : '');
+    el.innerHTML = `<div class="m-box">${done ? '✓' : ''}</div><div class="m-label">${m.label}</div>`;
+    el.addEventListener('click', () => toggle(m.id));
+    container.appendChild(el);
+  });
+  const countEl = document.querySelector(`[data-count-for="${groupKey}"]`);
+  const doneInGroup = MILESTONES[groupKey].filter(m => state.checked[m.id]).length;
+  countEl.textContent = `${doneInGroup} / ${MILESTONES[groupKey].length}`;
+}
+
+function renderHero(){
+  const total = totalMilestoneCount();
+  const done = checkedCount();
+  const pct = total ? Math.round((done/total)*100) : 0;
+  document.getElementById('heroCount').textContent = `${done} / ${total}`;
+  document.getElementById('ringPct').textContent = `${pct}%`;
+  const circumference = 188.5;
+  const offset = circumference - (pct/100)*circumference;
+  document.getElementById('ringFg').style.strokeDashoffset = offset;
+}
+
+function renderWeight(){
+  const start = parseFloat(state.wStart);
+  const current = parseFloat(state.wCurrent);
+  const goal = 175;
+  const fill = document.getElementById('wBarFill');
+  const status = document.getElementById('wStatus');
+  document.getElementById('wStart').value = state.wStart || '';
+  document.getElementById('wCurrent').value = state.wCurrent || '';
+
+  if(isNaN(current)){
+    fill.style.width = '0%';
+    status.textContent = 'Enter your numbers to track progress toward 175 lb';
+    return;
+  }
+  if(current <= goal){
+    fill.style.width = '100%';
+    status.textContent = `Goal reached — ${current} lb`;
+    return;
+  }
+  if(isNaN(start) || start <= goal){
+    const toGo = (current - goal).toFixed(1);
+    fill.style.width = '10%';
+    status.textContent = `${toGo} lb to go`;
+    return;
+  }
+  const progress = Math.max(0, Math.min(100, ((start - current) / (start - goal)) * 100));
+  fill.style.width = `${progress}%`;
+  status.textContent = `${(current - goal).toFixed(1)} lb to go · ${Math.round(progress)}% there`;
+}
+
+function toggle(id){
+  state.checked[id] = !state.checked[id];
+  saveState();
+  renderAll();
+}
+
+function renderAll(){
+  Object.keys(MILESTONES).forEach(renderGroup);
+  renderHero();
+  renderWeight();
+}
+
+document.getElementById('wStart').addEventListener('change', (e) => {
+  state.wStart = e.target.value;
+  saveState();
+  renderWeight();
+});
+document.getElementById('wCurrent').addEventListener('change', (e) => {
+  state.wCurrent = e.target.value;
+  saveState();
+  renderWeight();
+});
+document.getElementById('resetBtn').addEventListener('click', async () => {
+  if(!confirm('Reset all checked milestones and weight numbers? This can\'t be undone.')) return;
+  state = { checked: {}, wStart: '', wCurrent: '' };
+  await saveState();
+  renderAll();
+});
+
+(async function init(){
+  await loadState();
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  renderAll();
+})();
+</script>
+</body>
+</html>
